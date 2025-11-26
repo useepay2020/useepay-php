@@ -26,7 +26,19 @@ class PaymentIntentService extends ApiService
         $request = new ApiRequest($path, $params);
         return $this->post($request);
     }
-    
+    /**
+     * Updates properties on a PaymentIntent object without confirming.
+     * @param id
+     * @param params
+     * @return
+     */
+    public function update($id, $params = array())
+    {
+        $path = sprintf('/api/v1/payment_intents/%s', ApiResource::urlEncodeId($id));
+        $request = new ApiRequest($path, $params);
+        return $this->post($request);
+    }
+
     /**
      * Retrieves a payment intent
      * 
@@ -55,18 +67,32 @@ class PaymentIntentService extends ApiService
         $request = new ApiRequest($path, $params);
         return $this->post($request);
     }
-    
+
     /**
-     * Cancels a payment intent
-     * 
-     * @param string $id Payment intent ID
-     * @return mixed
-     * @throws UseePayException
+     * A PaymentIntent can be cancelled when it is in one of these statuses: REQUIRES_PAYMENT_METHOD, REQUIRES_CUSTOMER_ACTION, REQUIRES_CAPTURE.
+     * Any outstanding, un-captured funds will be refunded once cancelled.
+     * @param id
+     * @param params
+     * @return
      */
-    public function cancel($id)
+    public function cancel($id,$params = array())
     {
         $path = sprintf('/api/v1/payment_intents/%s/cancel', ApiResource::urlEncodeId($id));
-        $request = new ApiRequest($path, null);
+        $request = new ApiRequest($path, $params);
+        return $this->post($request);
+    }
+    /**
+     * Capture the funds of an existing uncaptured PaymentIntent when its status is requires_capture.
+     *
+     * Uncaptured PaymentIntents are cancelled a set number of days (7 by default) after their creation.
+     * @param id
+     * @param params
+     * @return
+     */
+    public function capture($id, $params = array())
+    {
+        $path = sprintf('/api/v1/payment_intents/%s/capture', ApiResource::urlEncodeId($id));
+        $request = new ApiRequest($path, $params);
         return $this->post($request);
     }
 }
